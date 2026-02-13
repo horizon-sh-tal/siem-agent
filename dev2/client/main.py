@@ -47,11 +47,16 @@ class ChatterboxApplication:
         self.log_collector = LinuxLogCollector(self.config, self.checkpoint, self.kafka_producer)
         from client.service_manager import ServiceManager
         self.service_manager = ServiceManager(self.config)
+        self._shutdown_count = 0
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
 
     def _shutdown(self, signum, frame) -> None:
-        logger.info("Received signal %s – shutting down", signum)
+        self._shutdown_count += 1
+        if self._shutdown_count > 1:
+            logger.info("Forced exit")
+            os._exit(1)
+        logger.info("Received signal %s – shutting down (press Ctrl+C again to force)", signum)
         self.running = False
 
     def _run_collection_loop(self) -> None:
@@ -72,7 +77,7 @@ class ChatterboxApplication:
 
     def run(self, chat: bool = False) -> None:
         logger.info("Chatterbox starting for %s", self.config["machine_id"])
-        t = threading.Thread(target=self._run_collection_loop, daemon=False)
+        t = threading.Thread(target=self._run_collection_loop, daemon=True)
         t.start()
         if chat and self.config["chat"].get("enabled"):
             try:
