@@ -1,0 +1,32 @@
+[Unit]
+Description=Chatterbox Application - Dev2 Machine
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/chatterbox/dev2
+ExecStart=/usr/bin/python3 /opt/chatterbox/dev2/client/main.py --config /opt/chatterbox/dev2/config.json
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/chatterbox/dev2/logs
+ReadOnlyPaths=/var/log
+
+MemoryMax=512M
+CPUQuota=50%
+
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
