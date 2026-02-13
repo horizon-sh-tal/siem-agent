@@ -1,0 +1,53 @@
+{
+  "machine_id": "dev2",
+  "machine_type": "linux",
+  "kafka_broker": "192.168.1.100:9092",
+  "log_collection": {
+    "interval_seconds": 3600,
+    "logs": {
+      "syslog": {
+        "path": "/var/log/syslog",
+        "topic": "dev2-syslog-message",
+        "enabled": true
+      },
+      "altlog": {
+        "path": "/var/log/alternatives.log",
+        "topic": "dev2-alternativelog-message",
+        "enabled": true
+      },
+      "authlog": {
+        "path": "/var/log/auth.log",
+        "topic": "dev2-authlog-message",
+        "enabled": true
+      },
+      "dpkglog": {
+        "path": "/var/log/dpkg.log",
+        "topic": "dev2-dpkglog-message",
+        "enabled": true
+      },
+      "apthistorylog": {
+        "path": "/var/log/apt/history.log",
+        "topic": "dev2-apthistory-message",
+        "enabled": true
+      },
+      "apttermlog": {
+        "path": "/var/log/apt/term.log",
+        "topic": "dev2-aptterm-message",
+        "enabled": true
+      }
+    }
+  },
+  "encryption": {
+    "public_key_path": "keys/kafka_public.pem",
+    "algorithm": "RSA-4096"
+  },
+  "resilience": {
+    "buffer_max_size_mb": 100,
+    "kafka_retry_interval_sec": 60,
+    "checkpoint_file": "logs/.checkpoint"
+  },
+  "chat": {
+    "enabled": true,
+    "account": "Guest"
+  }
+}

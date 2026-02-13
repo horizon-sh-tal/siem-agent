@@ -1,0 +1,13 @@
+{
+  "kafka": {
+    "bootstrap_servers": ["localhost:9092"],
+    "group_id": "chatterbox-log-receiver",
+    "topic_pattern": "^(dev1|dev2|prof1|prof2)-.*"
+  },
+  "encryption": {
+    "private_key_path": "keys/kafka_receiver_private.pem"
+  },
+  "storage": {
+    "base_dir": "received_logs"
+  }
+}
