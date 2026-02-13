@@ -71,8 +71,10 @@ class LinuxLogCollector:
 
         current_inode = self._get_inode(path)
 
-        # Detect rotation: inode changed or file shrank
-        if current_inode != last_inode or self._file_size(path) < last_pos:
+        # Detect rotation: inode changed (only if we had a previous inode)
+        # or file shrank below our last read position
+        if (last_inode != 0 and current_inode != last_inode) or \
+           (last_pos > 0 and self._file_size(path) < last_pos):
             logger.info("Rotation detected for %s – resetting position", log_name)
             last_pos = 0
 

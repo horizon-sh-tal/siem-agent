@@ -37,10 +37,16 @@ class ChatterboxApplication:
     def __init__(self, config_path: str) -> None:
         self.config = load_config(config_path)
         self.running = True
-        self.checkpoint = CheckpointManager(self.config["resilience"]["checkpoint_file"])
+
+        # Resolve paths relative to config file directory
+        config_dir = os.path.dirname(os.path.abspath(config_path))
+        checkpoint_path = os.path.join(config_dir, self.config["resilience"]["checkpoint_file"])
+        buffer_path = os.path.join(config_dir, "logs", "buffer.db")
+
+        self.checkpoint = CheckpointManager(checkpoint_path)
         self.kafka_producer = ResilientKafkaProducer(
             self.config["kafka_broker"],
-            os.path.join("logs", "buffer.db"),
+            buffer_path,
             self.config["resilience"].get("buffer_max_size_mb", 100),
         )
         from client.log_collector_linux import LinuxLogCollector
