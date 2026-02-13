@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from threading import Lock
+from threading import RLock
 from typing import Dict
 
 
@@ -14,7 +14,7 @@ class CheckpointManager:
     def __init__(self, checkpoint_file: str) -> None:
         self.checkpoint_file = checkpoint_file
         self.checkpoints: Dict[str, int] = {}
-        self._lock = Lock()
+        self._lock = RLock()
         self._ensure_parent_dir()
         self.load()
 
