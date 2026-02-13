@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 class LinuxLogCollector:
     """Collect new log entries from Linux log files and ship to Kafka."""
 
+    # Maximum entries per batch to prevent OOM on large log files
+    MAX_ENTRIES_PER_BATCH = 500
+
     def __init__(
         self,
         config: Dict[str, Any],
@@ -78,8 +81,20 @@ class LinuxLogCollector:
             logger.info("Rotation detected for %s – resetting position", log_name)
             last_pos = 0
 
-        new_entries = self._read_from_position(path, last_pos)
-        new_pos = last_pos + sum(len(line.encode("utf-8", errors="replace")) for line in new_entries)
+        # On first run (no checkpoint), start from end of file
+        # to avoid reading potentially huge historical logs
+        if last_inode == 0 and last_pos == 0:
+            last_pos = self._file_size(path)
+            logger.info(
+                "First run for %s – starting from current end of file (pos %d)",
+                log_name, last_pos,
+            )
+            self.checkpoint.update(log_name, last_pos)
+            self.checkpoint.update(f"{log_name}_inode", current_inode)
+            return
+
+        new_entries = self._read_from_position(path, last_pos, self.MAX_ENTRIES_PER_BATCH)
+        new_pos = last_pos + sum(len(line.encode("utf-8", errors="replace")) + 1 for line in new_entries)
 
         if not new_entries:
             logger.debug("No new entries for %s", log_name)
@@ -95,7 +110,7 @@ class LinuxLogCollector:
             "Collected %d new entries from %s (%s)", len(new_entries), log_name, path
         )
 
-    def _read_from_position(self, path: str, position: int) -> List[str]:
+    def _read_from_position(self, path: str, position: int, max_lines: int = 0) -> List[str]:
         """Read lines starting from byte *position*."""
         entries: List[str] = []
         try:
@@ -105,6 +120,8 @@ class LinuxLogCollector:
                     stripped = line.rstrip("\n")
                     if stripped:
                         entries.append(stripped)
+                    if max_lines and len(entries) >= max_lines:
+                        break
         except PermissionError:
             logger.error("Permission denied reading %s", path)
         except OSError as exc:
