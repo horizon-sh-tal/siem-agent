@@ -3,7 +3,7 @@
   "machine_type": "linux",
   "kafka_broker": "192.168.27.211:9092",
   "log_collection": {
-    "interval_seconds": 3600,
+    "interval_seconds": 30,
     "logs": {
       "syslog": {
         "path": "/var/log/syslog",
