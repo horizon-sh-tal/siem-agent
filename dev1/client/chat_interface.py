@@ -12,7 +12,7 @@ import logging
 import os
 import threading
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.errors import KafkaError
@@ -32,6 +32,7 @@ class ChatInterface:
         username: str,
         password: str,
         users_file: str = "users.json",
+        on_message: Optional[Callable[[Dict[str, Any]], None]] = None,
     ) -> None:
         if username not in _ALLOWED_USERS:
             raise ValueError(f"User '{username}' is not a valid account")
@@ -41,6 +42,7 @@ class ChatInterface:
         # Look for users.json in parent directory (Chatterbox root)
         script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self._users_file = os.path.join(os.path.dirname(script_dir), users_file)
+        self._on_message = on_message
 
         if not self.authenticate(username, password):
             raise ValueError("Invalid credentials")
@@ -106,6 +108,7 @@ class ChatInterface:
         }
         self.producer.send(topic, msg)
         self.producer.flush()
+        logger.info("Chat sent: %s -> %s", self.username, recipient)
         ts = datetime.now().strftime("%H:%M:%S")
         print(f"[{ts}] You -> {recipient}: {message}")
 
@@ -155,9 +158,13 @@ class ChatInterface:
             msg = message.value
             if msg.get("from") == self.username:
                 continue
-            ts = datetime.fromisoformat(msg["timestamp"]).strftime("%H:%M:%S")
-            print(f"\n[{ts}] {msg['from']}: {msg['message']}")
-            print("> ", end="", flush=True)
+            logger.info("Chat received: %s -> %s", msg.get("from"), self.username)
+            if self._on_message is not None:
+                self._on_message(msg)
+            else:
+                ts = datetime.fromisoformat(msg["timestamp"]).strftime("%H:%M:%S")
+                print(f"\n[{ts}] {msg['from']}: {msg['message']}")
+                print("> ", end="", flush=True)
 
     def _get_subscribed_topics(self) -> List[str]:
         mapping = {
