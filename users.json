@@ -1,19 +1,19 @@
 {
   "users": {
     "Prof1": {
-      "password_hash": "scrypt$32768$8$1$...",
+      "password_hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
       "role": "professor",
       "machine": "prof1",
       "can_chat_with": ["Prof2", "Guest"]
     },
     "Prof2": {
-      "password_hash": "scrypt$32768$8$1$...",
+      "password_hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
       "role": "professor",
       "machine": "prof2",
       "can_chat_with": ["Prof1", "Guest"]
     },
     "Guest": {
-      "password_hash": "scrypt$32768$8$1$...",
+      "password_hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
       "role": "researcher",
       "machine": "any",
       "can_chat_with": ["Prof1", "Prof2", "Guest"]

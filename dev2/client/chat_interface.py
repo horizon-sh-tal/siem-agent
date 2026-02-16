@@ -37,7 +37,9 @@ class ChatInterface:
 
         self.config = config
         self.username = username
-        self._users_file = users_file
+        # Look for users.json in parent directory (Chatterbox root)
+        script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self._users_file = os.path.join(os.path.dirname(script_dir), users_file)
 
         if not self.authenticate(username, password):
             raise ValueError("Invalid credentials")
