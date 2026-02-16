@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 class WindowsLogCollector:
     """Collect new Windows Event Log entries and ship to Kafka."""
 
+    # Maximum events per batch to prevent message size issues
+    MAX_EVENTS_PER_BATCH = 100
+
     def __init__(
         self,
         config: Dict[str, Any],
@@ -103,9 +106,9 @@ class WindowsLogCollector:
 
         ps_script = (
             f"try {{\n"
-            f"  $events = Get-WinEvent -FilterHashtable @{{{filter_hashtable}}} -ErrorAction Stop\n"
+            f"  $events = Get-WinEvent -FilterHashtable @{{{filter_hashtable}}} -ErrorAction Stop -MaxEvents {self.MAX_EVENTS_PER_BATCH * 2}\n"
             f"  $events | Where-Object {{ $_.RecordId -gt {after_record_id} }} |\n"
-            f"    Select-Object RecordId, TimeCreated, Id, LevelDisplayName, ProviderName, Message |\n"
+            f"    Select-Object RecordId, TimeCreated, Id, LevelDisplayName, ProviderName, Message -First {self.MAX_EVENTS_PER_BATCH} |\n"
             f"    ConvertTo-Json -Depth 3 -Compress\n"
             f"}} catch [Exception] {{\n"
             f"  if ($_.Exception.Message -notlike '*No events were found*') {{ throw }}\n"
