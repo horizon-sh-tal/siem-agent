@@ -60,10 +60,14 @@ class LogStorage:
             with open(log_file, "a", encoding="utf-8") as handle:
                 try:
                     parsed = json.loads(decrypted_text)
-                    handle.write(json.dumps(parsed, indent=2, ensure_ascii=False))
-                except json.JSONDecodeError:
+                    entries = parsed.get("entries", [])
+                    for line in entries:
+                        handle.write(line)
+                        handle.write("\n")
+                except (json.JSONDecodeError, KeyError, TypeError):
+                    # Fallback: write raw text if not valid JSON structure
                     handle.write(decrypted_text)
-                handle.write("\n")
+                    handle.write("\n")
         else:
             # ---- Windows / other: date-based files ----
             log_dir = os.path.join(self.base_dir, machine_id, log_type)
@@ -77,10 +81,14 @@ class LogStorage:
             with open(log_file, "a", encoding="utf-8") as handle:
                 try:
                     parsed = json.loads(decrypted_text)
-                    handle.write(json.dumps(parsed, indent=2, ensure_ascii=False))
-                except json.JSONDecodeError:
+                    entries = parsed.get("entries", [])
+                    for line in entries:
+                        handle.write(line)
+                        handle.write("\n")
+                except (json.JSONDecodeError, KeyError, TypeError):
+                    # Fallback: write raw text if not valid JSON structure
                     handle.write(decrypted_text)
-                handle.write("\n")
+                    handle.write("\n")
 
         logger.info("Stored logs: %s/%s -> %s", machine_id, log_type, log_file)
 
