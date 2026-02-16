@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 
 import tkinter as tk
-from tkinter import messagebox, scrolledtext, simpledialog, ttk
+from tkinter import filedialog, messagebox, scrolledtext, simpledialog, ttk
 
 # Ensure project root is importable
 _PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
@@ -97,15 +97,32 @@ def _build_gui(config_path: str) -> None:
         append_message(f"[{ts}] You -> {recipient}: {text}")
         message_var.set("")
 
+    def send_attachment() -> None:
+        recipient = recipient_var.get().strip()
+        file_path = filedialog.askopenfilename(title="Select attachment")
+        if not file_path:
+            return
+        ci.send_attachment(recipient, file_path)
+        ts = datetime.now().strftime("%H:%M:%S")
+        append_message(f"[{ts}] You -> {recipient}: [attachment] {os.path.basename(file_path)}")
+
     send_button = ttk.Button(entry_frame, text="Send", command=send_message)
     send_button.pack(side="right", padx=(6, 0))
+    attach_button = ttk.Button(entry_frame, text="Attach", command=send_attachment)
+    attach_button.pack(side="right")
     message_entry.bind("<Return>", send_message)
 
     def poll_incoming() -> None:
         while not incoming.empty():
             msg = incoming.get()
+            msg_type = msg.get("type", "message")
             ts = datetime.fromisoformat(msg["timestamp"]).strftime("%H:%M:%S")
-            append_message(f"[{ts}] {msg['from']}: {msg['message']}")
+            if msg_type == "attachment_received":
+                append_message(
+                    f"[{ts}] {msg['from']}: [attachment] {msg['file_name']} saved to {msg['path']}"
+                )
+            else:
+                append_message(f"[{ts}] {msg['from']}: {msg.get('message', '')}")
         root.after(200, poll_incoming)
 
     def on_close() -> None:
