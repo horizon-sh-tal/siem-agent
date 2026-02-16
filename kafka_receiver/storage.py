@@ -3,11 +3,11 @@
 Stores decrypted logs under:
     received_logs/{machine_id}/{filename}
 
-Linux logs use standard Ubuntu filenames (single file per type, no date splitting):
+Linux logs use standard Ubuntu filenames (single file per type):
     syslog, alternatives.log, auth.log, dpkg.log, apt/history.log, apt/term.log
 
-Windows / other logs fall back to:
-    received_logs/{machine_id}/{log_type}/{YYYY-MM-DD}.log
+Windows logs use one file per event log type:
+    Security.evtx, System.evtx, Defender.evtx, etc.
 """
 
 from __future__ import annotations
@@ -30,6 +30,19 @@ LINUX_LOG_FILENAMES: dict[str, str] = {
     "aptterm": os.path.join("apt", "term.log"),
 }
 
+# Map Chatterbox log_type → Windows Event Log file names
+WINDOWS_LOG_FILENAMES: dict[str, str] = {
+    "security": "Security.evtx",
+    "system": "System.evtx",
+    "bit": "BITS-Client.evtx",
+    "applocker": "AppLocker.evtx",
+    "newservice": "NewService.evtx",
+    "bitlocker": "BitLocker.evtx",
+    "firewall": "Firewall.evtx",
+    "defender": "Defender.evtx",
+    "powershell": "PowerShell.evtx",
+}
+
 
 class LogStorage:
     """Write decrypted log payloads to the correct folder structure."""
@@ -46,11 +59,11 @@ class LogStorage:
     ) -> None:
         """Append *decrypted_text* to the appropriate log file.
 
-        Linux logs are stored as single files matching Ubuntu defaults
-        (e.g. ``syslog``, ``auth.log``).  All other log types fall back
-        to date-based files under a sub-directory.
+        Linux logs are stored as single files matching Ubuntu defaults.
+        Windows logs are stored as single .evtx files with event JSON.
         """
         ubuntu_name = LINUX_LOG_FILENAMES.get(log_type)
+        windows_name = WINDOWS_LOG_FILENAMES.get(log_type)
 
         if ubuntu_name is not None:
             # ---- Linux log: single file, Ubuntu naming ----
@@ -68,8 +81,24 @@ class LogStorage:
                     # Fallback: write raw text if not valid JSON structure
                     handle.write(decrypted_text)
                     handle.write("\n")
+        elif windows_name is not None:
+            # ---- Windows log: single file, Windows naming ----
+            log_file = os.path.join(self.base_dir, machine_id, windows_name)
+            os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+            with open(log_file, "a", encoding="utf-8") as handle:
+                try:
+                    parsed = json.loads(decrypted_text)
+                    events = parsed.get("events", [])
+                    for event in events:
+                        handle.write(json.dumps(event, ensure_ascii=False))
+                        handle.write("\n")
+                except (json.JSONDecodeError, KeyError, TypeError):
+                    # Fallback: write raw text
+                    handle.write(decrypted_text)
+                    handle.write("\n")
         else:
-            # ---- Windows / other: date-based files ----
+            # ---- Other: date-based files (fallback) ----
             log_dir = os.path.join(self.base_dir, machine_id, log_type)
             os.makedirs(log_dir, exist_ok=True)
 
@@ -81,12 +110,15 @@ class LogStorage:
             with open(log_file, "a", encoding="utf-8") as handle:
                 try:
                     parsed = json.loads(decrypted_text)
-                    entries = parsed.get("entries", [])
+                    entries = parsed.get("entries", parsed.get("events", []))
                     for line in entries:
-                        handle.write(line)
+                        if isinstance(line, dict):
+                            handle.write(json.dumps(line, ensure_ascii=False))
+                        else:
+                            handle.write(str(line))
                         handle.write("\n")
                 except (json.JSONDecodeError, KeyError, TypeError):
-                    # Fallback: write raw text if not valid JSON structure
+                    # Fallback: write raw text
                     handle.write(decrypted_text)
                     handle.write("\n")
 
