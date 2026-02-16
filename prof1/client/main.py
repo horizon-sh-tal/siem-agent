@@ -70,10 +70,12 @@ class ChatterboxApplication:
                 logger.error("Collection cycle error: %s", exc, exc_info=True)
                 time.sleep(60)
 
-    def run(self, chat: bool = False) -> None:
+    def run(self, chat: bool = False, logs_enabled: bool = True) -> None:
         logger.info("Chatterbox starting for %s", self.config["machine_id"])
-        t = threading.Thread(target=self._run_collection_loop, daemon=False)
-        t.start()
+        t = None
+        if logs_enabled:
+            t = threading.Thread(target=self._run_collection_loop, daemon=False)
+            t.start()
         if chat and self.config["chat"].get("enabled"):
             try:
                 from client.chat_interface import ChatInterface
@@ -85,13 +87,17 @@ class ChatterboxApplication:
             except Exception as exc:
                 logger.error("Chat failed: %s", exc)
         else:
-            try:
-                while self.running:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                pass
+            if logs_enabled:
+                try:
+                    while self.running:
+                        time.sleep(1)
+                except KeyboardInterrupt:
+                    pass
+            else:
+                logger.error("No mode selected. Use --chat or enable log collection.")
         self.running = False
-        t.join(timeout=30)
+        if t is not None:
+            t.join(timeout=30)
         self.kafka_producer.close()
         logger.info("Chatterbox shutdown complete")
 
@@ -100,8 +106,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Chatterbox Prof1")
     parser.add_argument("--config", default="config.json")
     parser.add_argument("--chat", action="store_true")
+    parser.add_argument(
+        "--chat-only",
+        action="store_true",
+        help="Run chat without starting log collection",
+    )
     args = parser.parse_args()
-    ChatterboxApplication(args.config).run(chat=args.chat)
+    if args.chat_only:
+        args.chat = True
+    ChatterboxApplication(args.config).run(chat=args.chat, logs_enabled=not args.chat_only)
 
 
 if __name__ == "__main__":
