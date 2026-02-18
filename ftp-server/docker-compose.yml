@@ -17,13 +17,12 @@ services:
       - ./ftp-data/guest:/home/ftpusers/guest
       - ./ftp-data/prof1:/home/ftpusers/prof1
       - ./ftp-data/prof2:/home/ftpusers/prof2
-    command: >
-      /bin/bash -c '
-        pure-pw useradd guest -u ftpuser -d /home/ftpusers/guest && \
-        pure-pw useradd prof1 -u ftpuser -d /home/ftpusers/prof1 && \
-        pure-pw useradd prof2 -u ftpuser -d /home/ftpusers/prof2 && \
-        pure-pw mkdb && \
-        /entrypoint.sh pure-ftpd'
+    volumes:
+      - ./ftp-data/guest:/home/ftpusers/guest
+      - ./ftp-data/prof1:/home/ftpusers/prof1
+      - ./ftp-data/prof2:/home/ftpusers/prof2
+      - ./add_ftp_users.sh:/add_ftp_users.sh
+    entrypoint: ["/bin/bash", "/add_ftp_users.sh"]
     networks:
       - ftpnet
 networks:
