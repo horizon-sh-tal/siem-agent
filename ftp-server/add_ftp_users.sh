@@ -1,13 +1,7 @@
 #!/bin/bash
 set -e
 
-# Add guest user (if not already created by env)
-pure-pw useradd guest -u ftpuser -d /home/ftpusers/guest <<EOF
-guest123
-guest123
-EOF
-
-# Add privileged users (replace with real passwords)
+# Only add privileged users (prof1, prof2)
 pure-pw useradd prof1 -u ftpuser -d /home/ftpusers/prof1 <<EOF
 [prof1_password]
 [prof1_password]
