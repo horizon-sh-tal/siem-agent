@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Logs & runtime data
+*.log
+logs/
+*.db
+*.sqlite3
+
+# Checkpoint files
+.checkpoint
+.checkpoint.tmp
+
+# Keys – NEVER commit private keys to version control
+# Public keys are also excluded; generate them per-deployment using setup_keys.py
+keys/*.pem
+keys/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
