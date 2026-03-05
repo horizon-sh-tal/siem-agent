@@ -1,0 +1,19 @@
+[Unit]
+Description=SIEM Agent – Kafka Log Receiver
+After=kafka.service
+Requires=kafka.service
+Documentation=https://github.com/horizon-sh-tal/siem-agent
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/siem-agent/kafka_receiver
+ExecStart=/usr/bin/python3 /opt/siem-agent/kafka_receiver/receiver.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=siem-receiver
+
+[Install]
+WantedBy=multi-user.target
