@@ -126,23 +126,22 @@ class LogStorage:
 
     @staticmethod
     def parse_topic(topic: str) -> tuple[str, str]:
-        """Extract machine_id and simplified log_type from a Kafka topic name.
+        """Extract machine_id and log_key from a Kafka topic name.
+
+        Topics are now structured as  ``{machine_id}-{log_key}``  where
+        machine_id may itself contain hyphens (e.g. ``kshitij-ubuntu``).
+        The log_key is always the *last* hyphen-separated segment.
 
         Examples
         --------
-        >>> LogStorage.parse_topic("dev1-syslog-message")
-        ('dev1', 'syslog')
-        >>> LogStorage.parse_topic("prof2-windowsdefender")
-        ('prof2', 'defender')
+        >>> LogStorage.parse_topic("kshitij-ubuntu-syslog")
+        ('kshitij-ubuntu', 'syslog')
+        >>> LogStorage.parse_topic("lab-pc-security")
+        ('lab-pc', 'security')
+        >>> LogStorage.parse_topic("ubuntu-auth")
+        ('ubuntu', 'auth')
         """
-        parts = topic.split("-", 1)
-        machine_id = parts[0]
-        raw_type = parts[1] if len(parts) > 1 else "unknown"
-
-        # Simplify according to spec
-        simple = (
-            raw_type.replace("-message", "")
-            .replace("wndsystemd", "")
-            .replace("windows", "")
-        )
-        return machine_id, simple
+        parts = topic.rsplit("-", 1)
+        if len(parts) == 2:
+            return parts[0], parts[1]
+        return topic, "unknown"

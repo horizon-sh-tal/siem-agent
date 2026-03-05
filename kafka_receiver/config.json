@@ -1,8 +1,8 @@
 {
   "kafka": {
     "bootstrap_servers": ["localhost:9092"],
-    "group_id": "chatterbox-log-receiver",
-    "topic_pattern": "^(dev1|dev2|prof1|prof2)-.*"
+    "group_id": "siem-log-receiver",
+    "topic_pattern": "^[a-zA-Z0-9._-]+-[a-zA-Z0-9._-]+$"
   },
   "encryption": {
     "private_key_path": "keys/kafka_receiver_private.pem"

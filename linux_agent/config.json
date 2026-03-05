@@ -1,0 +1,43 @@
+{
+  "machine_id": "auto",
+  "machine_type": "linux",
+  "kafka_broker": "192.168.27.211:9092",
+  "log_collection": {
+    "interval_seconds": 30,
+    "logs": {
+      "syslog": {
+        "path": "/var/log/syslog",
+        "enabled": true
+      },
+      "auth": {
+        "path": "/var/log/auth.log",
+        "enabled": true
+      },
+      "alternatives": {
+        "path": "/var/log/alternatives.log",
+        "enabled": true
+      },
+      "dpkg": {
+        "path": "/var/log/dpkg.log",
+        "enabled": true
+      },
+      "apt_history": {
+        "path": "/var/log/apt/history.log",
+        "enabled": true
+      },
+      "apt_term": {
+        "path": "/var/log/apt/term.log",
+        "enabled": true
+      }
+    }
+  },
+  "encryption": {
+    "public_key_path": "keys/kafka_public.pem",
+    "algorithm": "RSA-4096"
+  },
+  "resilience": {
+    "buffer_max_size_mb": 100,
+    "kafka_retry_interval_sec": 60,
+    "checkpoint_file": "logs/.checkpoint"
+  }
+}

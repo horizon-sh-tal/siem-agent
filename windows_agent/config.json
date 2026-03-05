@@ -1,0 +1,64 @@
+{
+  "machine_id": "auto",
+  "machine_type": "windows",
+  "kafka_broker": "192.168.27.211:9092",
+  "log_collection": {
+    "interval_seconds": 30,
+    "logs": {
+      "security": {
+        "log_name": "Security",
+        "event_id": null,
+        "enabled": true
+      },
+      "system": {
+        "log_name": "System",
+        "event_id": null,
+        "enabled": true
+      },
+      "bits_client": {
+        "log_name": "Microsoft-Windows-Bits-Client/Operational",
+        "event_id": null,
+        "enabled": true
+      },
+      "applocker": {
+        "log_name": "Microsoft-Windows-AppLocker/EXE and DLL",
+        "event_id": null,
+        "enabled": true
+      },
+      "new_service": {
+        "log_name": "System",
+        "event_id": 7045,
+        "enabled": true
+      },
+      "bitlocker": {
+        "log_name": "Microsoft-Windows-Bits-Client/Operational",
+        "event_id": 59,
+        "enabled": true
+      },
+      "firewall": {
+        "log_name": "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
+        "event_id": null,
+        "enabled": true
+      },
+      "defender": {
+        "log_name": "Microsoft-Windows-Windows Defender/Operational",
+        "event_id": null,
+        "enabled": true
+      },
+      "powershell": {
+        "log_name": "Microsoft-Windows-PowerShell/Operational",
+        "event_id": null,
+        "enabled": true
+      }
+    }
+  },
+  "encryption": {
+    "public_key_path": "keys/kafka_public.pem",
+    "algorithm": "RSA-4096"
+  },
+  "resilience": {
+    "buffer_max_size_mb": 100,
+    "kafka_retry_interval_sec": 60,
+    "checkpoint_file": "logs/.checkpoint"
+  }
+}

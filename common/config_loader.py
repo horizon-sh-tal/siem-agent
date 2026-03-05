@@ -21,7 +21,6 @@ REQUIRED_TOP_LEVEL_KEYS = {
     "log_collection",
     "encryption",
     "resilience",
-    "chat",
 }
 
 
@@ -53,8 +52,6 @@ def _validate_config(config: Dict[str, Any]) -> None:
         raise ConfigError("encryption must be an object")
     if not isinstance(config["resilience"], dict):
         raise ConfigError("resilience must be an object")
-    if not isinstance(config["chat"], dict):
-        raise ConfigError("chat must be an object")
 
     if "interval_seconds" not in config["log_collection"]:
         raise ConfigError("log_collection.interval_seconds is required")
@@ -66,6 +63,3 @@ def _validate_config(config: Dict[str, Any]) -> None:
 
     if "checkpoint_file" not in config["resilience"]:
         raise ConfigError("resilience.checkpoint_file is required")
-
-    if "account" not in config["chat"]:
-        raise ConfigError("chat.account is required")

@@ -1,0 +1,18 @@
+[Unit]
+Description=SIEM Agent – Linux Log Collector
+After=network.target
+Documentation=https://github.com/horizon-sh-tal/siem-agent
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/siem-agent/linux
+ExecStart=/usr/bin/python3 /opt/siem-agent/linux/agent/main.py --config /opt/siem-agent/linux/config.json
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=siem-agent-linux
+
+[Install]
+WantedBy=multi-user.target
