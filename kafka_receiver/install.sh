@@ -62,18 +62,23 @@ else
 fi
 
 # -----------------------------------------------------------------------------
-# Python dependencies
+# Python dependencies (venv to avoid externally-managed-environment error)
 # -----------------------------------------------------------------------------
 echo ""
 echo "[3/4] Installing Python dependencies..."
 
-# Ensure pip3 is available
-if ! command -v pip3 &>/dev/null; then
-    echo "  pip3 not found — installing python3-pip..."
-    apt-get install -y python3-pip
+# Ensure python3-venv is available
+if ! python3 -m venv --help &>/dev/null; then
+    echo "  Installing python3-venv..."
+    apt-get install -y python3-venv
 fi
 
-pip3 install -r requirements.txt
+VENV_DIR="$INSTALL_DIR/venv"
+echo "  Creating virtual environment at $VENV_DIR..."
+python3 -m venv "$VENV_DIR"
+"$VENV_DIR/bin/pip" install --upgrade pip --quiet
+"$VENV_DIR/bin/pip" install -r requirements.txt
+echo "  Dependencies installed in venv."
 
 # -----------------------------------------------------------------------------
 # Systemd service
