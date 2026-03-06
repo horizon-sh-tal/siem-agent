@@ -67,14 +67,9 @@ fi
 echo ""
 echo "[3/4] Installing Python dependencies..."
 
-# Ensure python3-venv is available
-if ! python3 -m venv --help &>/dev/null; then
-    echo "  Installing python3-venv..."
-    apt-get install -y python3-venv
-fi
-
+echo "==> Installing Python dependencies (venv)..."
+apt-get install -y python3-venv python3-full
 VENV_DIR="$INSTALL_DIR/venv"
-echo "  Creating virtual environment at $VENV_DIR..."
 python3 -m venv "$VENV_DIR"
 "$VENV_DIR/bin/pip" install --upgrade pip --quiet
 "$VENV_DIR/bin/pip" install -r requirements.txt

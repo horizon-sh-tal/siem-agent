@@ -19,9 +19,7 @@ cp    config.json  "$INSTALL_DIR/"
 cp -r ../common/   "$INSTALL_DIR/../common/" 2>/dev/null || true
 
 echo "==> Installing Python dependencies (venv)..."
-if ! python3 -m venv --help &>/dev/null; then
-    apt-get install -y python3-venv
-fi
+apt-get install -y python3-venv python3-full
 VENV_DIR="$INSTALL_DIR/venv"
 python3 -m venv "$VENV_DIR"
 "$VENV_DIR/bin/pip" install --upgrade pip --quiet
