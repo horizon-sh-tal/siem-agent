@@ -44,8 +44,9 @@ if ($existing) {
     nssm remove $ServiceName confirm
 }
 
-nssm install $ServiceName $PythonExe $MainScript
-nssm set $ServiceName AppDirectory  $InstallDir
+nssm install $ServiceName $PythonExe
+nssm set $ServiceName AppParameters  "`"$MainScript`" --config `"$InstallDir\config.json`""
+nssm set $ServiceName AppDirectory   $InstallDir
 nssm set $ServiceName DisplayName   $DisplayName
 nssm set $ServiceName Description   "SIEM Agent – collects Windows Event Logs and ships them encrypted to Kafka"
 nssm set $ServiceName Start         SERVICE_AUTO_START
