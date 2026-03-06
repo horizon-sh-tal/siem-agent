@@ -16,10 +16,13 @@ import threading
 import time
 from pathlib import Path
 
-# Ensure project root is importable
-_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
-if _PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, _PROJECT_ROOT)
+# Ensure project root (for common/) and linux_agent root (for agent/) are importable
+_THIS_DIR = Path(__file__).resolve()
+_AGENT_ROOT = str(_THIS_DIR.parent.parent)      # .../linux_agent/  (contains agent/)
+_PROJECT_ROOT = str(_THIS_DIR.parent.parent.parent)  # project root (contains common/)
+for _p in (_PROJECT_ROOT, _AGENT_ROOT):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from common.config_loader import load_config
 from common.checkpoint import CheckpointManager
