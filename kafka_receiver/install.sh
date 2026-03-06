@@ -66,6 +66,13 @@ fi
 # -----------------------------------------------------------------------------
 echo ""
 echo "[3/4] Installing Python dependencies..."
+
+# Ensure pip3 is available
+if ! command -v pip3 &>/dev/null; then
+    echo "  pip3 not found — installing python3-pip..."
+    apt-get install -y python3-pip
+fi
+
 pip3 install -r requirements.txt
 
 # -----------------------------------------------------------------------------
