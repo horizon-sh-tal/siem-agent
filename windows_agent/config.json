@@ -1,7 +1,7 @@
 {
   "machine_id": "auto",
   "machine_type": "windows",
-  "kafka_broker": "192.168.1.9:9092",
+  "kafka_broker": "192.168.1.8:9092",
   "log_collection": {
     "interval_seconds": 30,
     "logs": {
