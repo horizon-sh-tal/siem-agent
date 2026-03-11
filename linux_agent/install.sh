@@ -42,7 +42,6 @@ python3 -m venv "$VENV_DIR"
 
 SERVICE_FILE="services/siem-agent-linux.service"
 cp "$SERVICE_FILE" /etc/systemd/system/
-chattr +i "/etc/systemd/system/siem-agent-linux.service" 2>/dev/null || true
 
 chmod 700 "$INSTALL_DIR/agent/"
 chmod 600 "$INSTALL_DIR/keys/"*.pem 2>/dev/null || true
