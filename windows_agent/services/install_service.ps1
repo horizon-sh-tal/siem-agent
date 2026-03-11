@@ -1,4 +1,4 @@
-# SIEM Agent – Windows Service Installer
+# SIEM Agent - Windows Service Installer
 # Run as Administrator
 
 param(
@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $ServiceName  = "SIEMAgentWindows"
-$DisplayName  = "SIEM Agent – Windows Log Collector"
+$DisplayName  = "SIEM Agent - Windows Log Collector"
 $PythonExe    = (Get-Command python -ErrorAction SilentlyContinue).Source
 if (-not $PythonExe) { $PythonExe = "C:\Python39\python.exe" }
 $MainScript   = "$InstallDir\agent\main.py"
@@ -48,7 +48,7 @@ nssm install $ServiceName $PythonExe
 nssm set $ServiceName AppParameters  "`"$MainScript`" --config `"$InstallDir\config.json`""
 nssm set $ServiceName AppDirectory   $InstallDir
 nssm set $ServiceName DisplayName   $DisplayName
-nssm set $ServiceName Description   "SIEM Agent – collects Windows Event Logs and ships them encrypted to Kafka"
+nssm set $ServiceName Description   "SIEM Agent - collects Windows Event Logs and ships them encrypted to Kafka"
 nssm set $ServiceName Start         SERVICE_AUTO_START
 nssm set $ServiceName AppExit       Default Restart
 nssm set $ServiceName AppRestartDelay 10000
@@ -66,5 +66,5 @@ $status = nssm status $ServiceName
 if ($status -eq "SERVICE_RUNNING") {
     Write-Host "==> SIEM Agent installed and running!" -ForegroundColor Green
 } else {
-    Write-Host "==> Service status: $status – check logs at $InstallDir\logs" -ForegroundColor Yellow
+    Write-Host "==> Service status: $status - check logs at $InstallDir\logs" -ForegroundColor Yellow
 }
