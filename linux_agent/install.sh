@@ -14,10 +14,24 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 mkdir -p "$INSTALL_DIR/logs"
+mkdir -p "$INSTALL_DIR/keys"
 cp -r agent/       "$INSTALL_DIR/"
-cp -r keys/        "$INSTALL_DIR/"
 cp    config.json  "$INSTALL_DIR/"
 cp -r ../common/   "$INSTALL_DIR/../common/" 2>/dev/null || true
+
+# Copy key if present, otherwise warn
+if [ -f "keys/kafka_public.pem" ]; then
+    cp keys/kafka_public.pem "$INSTALL_DIR/keys/"
+    chmod 600 "$INSTALL_DIR/keys/kafka_public.pem"
+    echo "==> Public key installed."
+else
+    echo ""
+    echo "  WARNING: keys/kafka_public.pem not found."
+    echo "  Copy it before starting the agent:"
+    echo "    scp kafka@<kafka-server>:~/siem-agent/linux_agent/keys/kafka_public.pem \\"
+    echo "        $INSTALL_DIR/keys/kafka_public.pem"
+    echo ""
+fi
 
 echo "==> Installing Python dependencies (venv)..."
 apt-get install -y python3-venv python3-full
