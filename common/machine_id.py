@@ -65,8 +65,11 @@ def _get_hostname() -> str:
 
 
 def _has_tty() -> bool:
-    """Return True when stdin is an interactive terminal."""
-    return sys.stdin is not None and sys.stdin.isatty()
+    """Return True only when stdin is a real interactive terminal."""
+    try:
+        return os.isatty(sys.stdin.fileno())
+    except (AttributeError, OSError, ValueError):
+        return False
 
 
 def _prompt_label(hostname: str) -> str:
