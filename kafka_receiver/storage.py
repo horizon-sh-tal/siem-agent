@@ -22,25 +22,25 @@ logger = logging.getLogger(__name__)
 
 # Map Chatterbox log_type → Ubuntu-standard file path (relative to machine dir)
 LINUX_LOG_FILENAMES: dict[str, str] = {
-    "syslog": "syslog",
-    "alternativelog": os.path.join("alternatives.log"),
-    "authlog": "auth.log",
-    "dpkglog": "dpkg.log",
-    "apthistory": os.path.join("apt", "history.log"),
-    "aptterm": os.path.join("apt", "term.log"),
+    "syslog":       "syslog",
+    "auth":         "auth.log",
+    "alternatives": "alternatives.log",
+    "dpkg":         "dpkg.log",
+    "apt_history":  os.path.join("apt", "history.log"),
+    "apt_term":     os.path.join("apt", "term.log"),
 }
 
 # Map Chatterbox log_type → Windows Event Log file names
 WINDOWS_LOG_FILENAMES: dict[str, str] = {
-    "security": "Security.evtx",
-    "system": "System.evtx",
-    "bit": "BITS-Client.evtx",
-    "applocker": "AppLocker.evtx",
-    "newservice": "NewService.evtx",
-    "bitlocker": "BitLocker.evtx",
-    "firewall": "Firewall.evtx",
-    "defender": "Defender.evtx",
-    "powershell": "PowerShell.evtx",
+    "security":    "Security.evtx",
+    "system":      "System.evtx",
+    "bits_client": "BITS-Client.evtx",
+    "applocker":   "AppLocker.evtx",
+    "new_service": "NewService.evtx",
+    "bitlocker":   "BitLocker.evtx",
+    "firewall":    "Firewall.evtx",
+    "defender":    "Defender.evtx",
+    "powershell":  "PowerShell.evtx",
 }
 
 
