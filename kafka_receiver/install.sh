@@ -4,6 +4,7 @@
 # Run on the Kafka VM as root AFTER kafka_vm_setup.sh has completed
 # =============================================================================
 set -e
+cd "$(dirname "$0")"  # always run from script's own directory
 
 INSTALL_DIR="/opt/siem-agent/kafka_receiver"
 SERVICE_FILE="services/siem-receiver.service"

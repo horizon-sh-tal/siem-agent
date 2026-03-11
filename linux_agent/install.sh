@@ -2,6 +2,7 @@
 # SIEM Agent – Linux installer
 # Run as root: sudo ./install.sh
 set -e
+cd "$(dirname "$0")"  # always run from script's own directory
 
 INSTALL_DIR="/opt/siem-agent/linux"
 
