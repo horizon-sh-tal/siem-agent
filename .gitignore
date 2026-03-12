@@ -41,3 +41,6 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Local technical documentation (not for version control)
+TECHNICAL_SPEC.md
